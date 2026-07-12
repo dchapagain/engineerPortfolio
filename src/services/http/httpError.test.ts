@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest'
 
-import { HttpError, isRetryableHttpError } from './httpError'
+import { HttpError, isHttpError, isRetryableHttpError } from './httpError'
+
+describe('isHttpError', () => {
+  it('is true only for HttpError instances', () => {
+    expect(isHttpError(new HttpError({ message: 'x' }))).toBe(true)
+    expect(isHttpError(new Error('x'))).toBe(false)
+    expect(isHttpError({ status: 500, code: 'X' })).toBe(false)
+    expect(isHttpError(null)).toBe(false)
+  })
+})
 
 describe('isRetryableHttpError', () => {
   it('treats non-HttpError values as retryable', () => {
