@@ -8,7 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Vitest test setup (jsdom, Testing Library) with unit tests for the HTTP layer's error classification and JSON parsing
+- `Test` job in the CI quality matrix, so tests gate pull requests alongside lint, format, and typecheck
+
 ### Changed
+
+- `tsconfig.node.json` now typechecks `vitest.config.ts`
 
 ### Fixed
 
@@ -18,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- Pinned Node to `24.6.0` across `.nvmrc`, `package.json` engines, and CI (via `node-version-file`)
+- Pinned Node to `24.6.0` across `.nvmrc`, `package.json` engines, and CI (via `node-version-file`) (#26)
 
 ---
 
@@ -26,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- SEO/social metadata — meta description, Open Graph, and Twitter Card tags, plus favicon and OG image, injected at build time from site data (#22)
+- SEO/social metadata: meta description, Open Graph, and Twitter Card tags, plus favicon and OG image, injected at build time from site data (#22)
 - Prod build fails fast when `VITE_DOMAIN_URL` is unset, preventing a broken chat deploy (#23)
 
 ### Changed
@@ -65,3 +70,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Dark/light theme toggle
 - Reusable UI components, centralized site data, and a WCAG-AA accessibility pass
 - Project tooling: quality checks (lint/format/typecheck), licenses, and README
+
+[Unreleased]: https://github.com/dchapagain/engineerPortfolio/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/dchapagain/engineerPortfolio/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/dchapagain/engineerPortfolio/compare/v0.2.1...v0.3.0
+[0.2.1]: https://github.com/dchapagain/engineerPortfolio/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/dchapagain/engineerPortfolio/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/dchapagain/engineerPortfolio/releases/tag/v0.1.0

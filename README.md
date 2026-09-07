@@ -15,6 +15,7 @@ A mobile-first portfolio site built with **React + TypeScript + Vite**, shipping
 - **Animations:** Framer Motion
 - **Icons:** lucide-react + react-icons
 - **Code quality:** ESLint + Prettier + TypeScript project references (`tsc -b`)
+- **Testing:** Vitest + Testing Library (jsdom)
 - **A11y tooling:** eslint-plugin-jsx-a11y + `@axe-core/react`
 - **Security:** CodeQL analysis (GitHub Actions)
 - **Git hooks:** Husky + lint-staged
@@ -27,7 +28,7 @@ A mobile-first portfolio site built with **React + TypeScript + Vite**, shipping
 
 **Typed HTTP layer (`src/services/http`).** A small client wraps `fetch` with an `AbortSignal` timeout, retry with backoff on retryable failures, and JSON parsing that never throws. Responses are validated at runtime against a typed envelope before reaching feature code, so malformed payloads fail predictably instead of leaking `undefined`.
 
-**Chat assistant (`src/features/chat`).** A floating widget posts questions to a [RAG backend](https://github.com/deepagain81/resume_rag_assistant) (a separate service at `VITE_DOMAIN_URL` + `/api/query`) through the HTTP layer. The model never authors URLs: it emits tokens from a closed vocabulary (`#work`, `site:github`, ...) that the client resolves against `site.ts`, and anything else renders as plain text. Input is capped (`MAX_INPUT_CHARACTERS`) to match the backend cache-key limit; the backend stays the authority on validation and rate limiting.
+**Chat assistant (`src/features/chat`).** A floating widget posts questions to a [RAG backend](https://github.com/dchapagain/resume_rag_assistant) (a separate service at `VITE_DOMAIN_URL` + `/api/query`) through the HTTP layer. The model never authors URLs: it emits tokens from a closed vocabulary (`#work`, `site:github`, ...) that the client resolves against `site.ts`, and anything else renders as plain text. Input is capped (`MAX_INPUT_CHARACTERS`) to match the backend cache-key limit; the backend stays the authority on validation and rate limiting.
 
 **Build-time SEO (`vite/html-meta-plugin.ts`).** Title and description are injected into `index.html` at build time from `site.ts`, HTML-escaped, so the shipped markup carries real meta, Open Graph, and Twitter tags without duplicating copy.
 
@@ -58,6 +59,7 @@ src/
   sections/       page sections (hero, work, skills, experience, contact)
   features/chat/  chat widget, hook, API client, link-token renderer
   services/http/  typed fetch client: timeout, retry, response-envelope guards
+  test/           test setup (jest-dom matchers); specs sit beside their source
   index.css       global styles and design tokens
 vite/
   html-meta-plugin.ts   injects SEO meta into index.html at build time
@@ -69,14 +71,18 @@ public/           resume PDF, favicon, OG image
 
 ## Quality gate
 
-CI runs on every PR: lint, format, and typecheck (matrix), plus CodeQL analysis. Run the same checks locally:
+CI runs on every PR: lint, format, typecheck, and tests (matrix), plus CodeQL analysis. Run the same checks locally:
 
 ```bash
 npm run quality        # lint + format:check + typecheck
 npm run quality:fix    # auto-fix, then typecheck
+npm test               # run the test suite once
+npm run test:watch     # watch mode
 ```
 
 Aliases: `q` (quality), `qf` (quality:fix), `tc` (typecheck), `lf` (lint:fix).
+
+Unit tests cover the pure modules in `src/services/http`, where the tricky behavior lives: which failures are retryable, and JSON parsing that reports errors instead of throwing. Specs are co-located with their source as `*.test.ts`.
 
 ---
 
@@ -99,4 +105,4 @@ If you publish a fork or derivative, please **remove or replace all personal con
 
 - Email: dchapagain.dev@gmail.com
 - LinkedIn: [linkedin.com/in/dchapagain](https://www.linkedin.com/in/dchapagain/)
-- GitHub: [github.com/deepagain81](https://github.com/deepagain81)
+- GitHub: [github.com/dchapagain](https://github.com/dchapagain)
