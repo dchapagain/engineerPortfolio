@@ -8,14 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Vitest test setup (jsdom, Testing Library) with unit tests for the HTTP layer's error classification and JSON parsing
-- `Test` job in the CI quality matrix, so tests gate pull requests alongside lint, format, and typecheck
+- Vitest test setup (jsdom, Testing Library) with unit tests for the HTTP layer's error classification and JSON parsing (#27)
+- `Test` job in the CI quality matrix, running alongside lint, format, and typecheck on every pull request (#27)
 
 ### Changed
 
-- `tsconfig.node.json` now typechecks `vitest.config.ts`
-
-### Fixed
+- Updated the GitHub profile link to the renamed `dchapagain` handle (#27)
+- Rewrote the README around the two modules worth reading, and documented the test suite (#28)
+- `tsconfig.node.json` now typechecks `vitest.config.ts` (#27)
+- Refreshed the resume PDF (#28)
 
 ---
 
