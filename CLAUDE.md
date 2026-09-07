@@ -151,4 +151,3 @@ of truth.** When any of these change, check all four:
 Titles, employers, date ranges, and every quoted metric must agree across all of them.
 If a metric appears on the site, it must appear on the resume with the same number and
 the same scope. When they conflict, the resume wins, and say so rather than guessing.
-
