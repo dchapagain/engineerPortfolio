@@ -9,7 +9,7 @@ const social = {
   },
   github: {
     label: LINK_LABELS.github,
-    href: 'https://github.com/deepagain81',
+    href: 'https://github.com/dchapagain',
     external: true,
     icon: 'github',
   },

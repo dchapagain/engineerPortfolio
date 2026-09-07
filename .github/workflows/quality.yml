@@ -16,6 +16,8 @@ jobs:
             run: npm run format:check
           - name: Typecheck
             run: npm run typecheck
+          - name: Test
+            run: npm test
     steps:
       - name: Checkout
         uses: actions/checkout@v4
