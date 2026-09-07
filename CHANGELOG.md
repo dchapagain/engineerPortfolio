@@ -6,16 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.4.0] - 2026-09-07
+
 ### Added
 
-- Vitest test setup (jsdom, Testing Library) with unit tests for the HTTP layer's error classification and JSON parsing
-- `Test` job in the CI quality matrix, so tests gate pull requests alongside lint, format, and typecheck
+- Vitest test setup (jsdom, Testing Library) with unit tests for the HTTP layer's error classification and JSON parsing (#27)
+- `Test` job in the CI quality matrix, running alongside lint, format, and typecheck on every pull request (#27)
 
 ### Changed
 
-- `tsconfig.node.json` now typechecks `vitest.config.ts`
-
-### Fixed
+- Updated the GitHub profile link to the renamed `dchapagain` handle (#27)
+- Rewrote the README around the two modules worth reading, and documented the test suite (#28)
+- `tsconfig.node.json` now typechecks `vitest.config.ts` (#27)
+- Refreshed the resume PDF (#28)
 
 ---
 
@@ -71,7 +76,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Reusable UI components, centralized site data, and a WCAG-AA accessibility pass
 - Project tooling: quality checks (lint/format/typecheck), licenses, and README
 
-[Unreleased]: https://github.com/dchapagain/engineerPortfolio/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/dchapagain/engineerPortfolio/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/dchapagain/engineerPortfolio/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/dchapagain/engineerPortfolio/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/dchapagain/engineerPortfolio/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/dchapagain/engineerPortfolio/compare/v0.2.0...v0.2.1

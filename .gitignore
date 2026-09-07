@@ -38,3 +38,5 @@ coverage
 
 # Local agent context
 .codex/
+CLAUDE.local.md
+RELEASING.local.md
