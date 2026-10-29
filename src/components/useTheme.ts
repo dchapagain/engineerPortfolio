@@ -1,32 +1,65 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { THEME_TYPE } from '@/data/constants'
 
 type Theme = (typeof THEME_TYPE)[keyof typeof THEME_TYPE]
 
-function getInitialTheme(): Theme {
-  const stored = localStorage.getItem('theme')
-  if (stored === THEME_TYPE.light || stored === THEME_TYPE.dark) return stored
+function readStoredTheme(): Theme | null {
+  try {
+    const stored = localStorage.getItem('theme')
+    if (stored === THEME_TYPE.light || stored === THEME_TYPE.dark) return stored
+  } catch {
+    // Ignore
+  }
 
-  return THEME_TYPE.light
+  return null
+}
+
+// Mirrors the bootstrap script in index.html. The two must agree or the first
+// paint flashes the wrong theme.
+function getInitialTheme(): Theme {
+  const stored = readStoredTheme()
+  if (stored) return stored
+
+  /*
+   * The prerender pass has no window. Light is the only answer available
+   * there, and it is never painted: the bootstrap script sets the real theme
+   * on <html> before first paint, and the client re-renders this tree with
+   * the resolved preference as soon as it mounts.
+   */
+  if (typeof window === 'undefined') return THEME_TYPE.light
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? THEME_TYPE.dark
+    : THEME_TYPE.light
 }
 
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>(() => getInitialTheme())
+  const [theme, setTheme] = useState<Theme>(getInitialTheme)
 
   useEffect(() => {
     const root = document.documentElement
     if (theme === THEME_TYPE.dark) root.classList.add(THEME_TYPE.dark)
     else root.classList.remove(THEME_TYPE.dark)
-
-    localStorage.setItem('theme', theme)
   }, [theme])
 
-  const toggle = useMemo(
-    () => () =>
-      setTheme((theme) => (theme === THEME_TYPE.dark ? THEME_TYPE.light : THEME_TYPE.dark)),
-    [],
-  )
+  /*
+   * Storage is written only on an explicit choice. Persisting on mount would
+   * pin whatever the OS happened to prefer on the first visit, after which the
+   * site would stop following the OS forever.
+   */
+  const toggle = useCallback(() => {
+    setTheme((current) => {
+      const next = current === THEME_TYPE.dark ? THEME_TYPE.light : THEME_TYPE.dark
+      try {
+        localStorage.setItem('theme', next)
+      } catch {
+        // Ignore
+      }
 
-  return { theme, setTheme, toggle }
+      return next
+    })
+  }, [])
+
+  return { theme, toggle }
 }

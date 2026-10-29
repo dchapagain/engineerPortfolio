@@ -1,0 +1,6 @@
+# Everything on this site is public and meant to be found, including by the
+# crawlers behind generative answers. They are allowed deliberately: being
+# quotable in an AI answer is the point of publishing a portfolio, and a
+# blanket allow does not go stale every time a vendor ships a new user agent.
+User-agent: *
+Allow: /

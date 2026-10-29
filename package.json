@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build --mode prod",
+    "build": "tsc -b && vite build --mode prod && rm -f dist/.DS_Store",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lf": "npm run lint:fix",
