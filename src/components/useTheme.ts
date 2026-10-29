@@ -21,6 +21,14 @@ function getInitialTheme(): Theme {
   const stored = readStoredTheme()
   if (stored) return stored
 
+  /*
+   * The prerender pass has no window. Light is the only answer available
+   * there, and it is never painted: the bootstrap script sets the real theme
+   * on <html> before first paint, and the client re-renders this tree with
+   * the resolved preference as soon as it mounts.
+   */
+  if (typeof window === 'undefined') return THEME_TYPE.light
+
   return window.matchMedia('(prefers-color-scheme: dark)').matches
     ? THEME_TYPE.dark
     : THEME_TYPE.light

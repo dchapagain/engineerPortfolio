@@ -1,5 +1,5 @@
 import { MessageCircle } from 'lucide-react'
-import { lazy, Suspense, useCallback, useLayoutEffect, useRef } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 
 import { site } from '@/data'
 
@@ -13,6 +13,11 @@ const ChatPanel = lazy(() =>
 )
 
 const PANEL_SIZE = 'h-[min(70vh,34rem)] w-[min(calc(100vw-2rem),24rem)]'
+
+// Layout phase: the panel autofocuses from a passive effect, and a child's
+// passive effects run first, so a passive capture here records the textarea.
+// useEffect without a DOM, or the prerender warns on a layout effect.
+const useOpenerCapture = typeof document === 'undefined' ? useEffect : useLayoutEffect
 
 type ChatDockProps = {
   isOpen: boolean
@@ -30,9 +35,7 @@ export function ChatDock({ isOpen, onOpenChange }: ChatDockProps) {
   const returnFocusRef = useRef<HTMLElement | null>(null)
   const { keyboardInset, viewportHeight } = useVisualViewportInset(isOpen)
 
-  // Layout phase: the panel autofocuses from a passive effect, and a child's
-  // passive effects run first, so a passive capture here records the textarea.
-  useLayoutEffect(() => {
+  useOpenerCapture(() => {
     if (!isOpen) return
 
     // Ignore body: when the panel is opened without a focused trigger there is
