@@ -1,35 +1,142 @@
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/fraunces-latin-600-normal-v1.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2122, U+2191, U+2193, U+2212,
+    U+2215;
+}
+
+@font-face {
+  font-family: 'Fraunces';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/fraunces-latin-400-italic-v1.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2122, U+2191, U+2193, U+2212,
+    U+2215;
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/dm-sans-latin-400-normal-v1.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2122, U+2191, U+2193, U+2212,
+    U+2215;
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/dm-sans-latin-500-normal-v1.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2122, U+2191, U+2193, U+2212,
+    U+2215;
+}
+
+@font-face {
+  font-family: 'DM Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/dm-mono-latin-400-normal-v1.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2122, U+2191, U+2193, U+2212,
+    U+2215;
+}
+
+@font-face {
+  font-family: 'DM Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/dm-mono-latin-500-normal-v1.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2122, U+2191, U+2193, U+2212,
+    U+2215;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Every filled surface has a paired foreground token (--emphasis/--on-emphasis,
+ * --accent-fill/--on-accent). Painting a fill with --fg breaks in one theme or
+ * the other, which is how the first pass of this palette shipped invisible text.
+ */
 :root {
-  --bg: 252 252 253;
-  --surface: 247 247 250;
-  --border: 145 145 155;
+  --bg: 234 242 232;
+  --surface: 225 234 224;
+  --band: 217 230 216;
 
-  --fg: 10 10 10;
-  --muted: 100 100 110;
+  --fg: 25 75 67;
+  /* Darkened from 74 106 92: that cleared AA by only 3% on the work band,
+     and muted carries most of the 11px label text. */
+  --muted: 63 91 78;
+  --rule: 159 183 170;
 
-  --accent: 79 70 229;
-  --accent-contrast: 255 255 255;
+  --emphasis: 24 90 80;
+  --on-emphasis: 236 240 226;
 
-  --type-scale: 1;
+  /* Display accent clears 3:1, so it is for large type and rules only. */
+  --accent: 183 92 62;
+  --accent-text: 156 69 38;
+  --accent-fill: 156 69 38;
+  --on-accent: 234 242 232;
+
+  --ink: 24 90 80;
+}
+
+:root.dark .t-inverted {
+  --fg: 15 26 23;
+  --muted: 46 74 65;
+  --rule: 94 148 132;
+  --accent: 125 53 28;
+  --accent-text: 125 53 28;
 }
 
 :root.dark {
-  --bg: 10 10 10;
-  --surface: 17 17 17;
-  --border: 105 105 115;
+  --bg: 15 26 23;
+  --surface: 21 35 31;
+  --band: 19 31 27;
 
-  --fg: 244 244 245;
-  --muted: 130 130 140;
+  --fg: 228 239 230;
+  --muted: 159 184 170;
+  --rule: 44 65 57;
 
-  --accent: 129 140 248;
-  --accent-contrast: 9 9 11;
+  --emphasis: 158 211 191;
+  --on-emphasis: 15 26 23;
+
+  --accent: 217 138 102;
+  --accent-text: 224 154 120;
+  --accent-fill: 217 138 102;
+  --on-accent: 15 26 23;
+
+  --ink: 158 211 191;
 }
 
+/*
+ * The header is sticky at 4rem, so an anchor jump would otherwise land the
+ * section's heading underneath it. Set on the scroll container rather than
+ * per target, which also covers the skip link.
+ */
 html {
-  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -55,76 +162,287 @@ body {
   }
 }
 
+@keyframes plate-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dock-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-4px) rotate(-1.3deg);
+  }
+  66% {
+    transform: translateY(3px) rotate(1deg);
+  }
+}
+
+@keyframes stack-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes chat-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1.5px);
+  }
+}
+
+/*
+ * Gate on no-preference so a UA reporting neither setting stays still. The
+ * chat launcher is CSS-only for the same reason the dock is: Framer Motion
+ * belongs in the lazy panel, not the initial bundle.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .t-orbit {
+    transform-origin: 50% 50%;
+    animation: plate-orbit 25s linear infinite;
+  }
+  .t-chat-bob {
+    animation: chat-bob 2.2s ease-in-out infinite;
+  }
+  .t-chat-ripple-ring {
+    border-color: rgb(var(--accent-fill) / 0.7);
+    animation: chat-ripple 1.6s ease-out infinite;
+  }
+  .t-chat-ripple-ring-delay {
+    border-color: rgb(var(--accent-fill) / 0.55);
+    animation-delay: 0.8s;
+  }
+  /* The track holds the run twice, so -50% is exactly one run and loops seamlessly. */
+  .t-marquee-track {
+    animation: stack-marquee 48s linear infinite;
+  }
+  .t-marquee:hover .t-marquee-track,
+  .t-marquee:focus-within .t-marquee-track {
+    animation-play-state: paused;
+  }
+  /*
+   * Dock magnification: the hovered tile grows most and its two neighbours
+   * less, which is the falloff that makes it read as a dock rather than a
+   * single button. :has() does the left-hand neighbour; browsers without it
+   * simply lose the falloff.
+   */
+  .t-dock-slot:hover {
+    transform: scale(1.3);
+  }
+  .t-dock-slot:hover + .t-dock-slot,
+  .t-dock-slot:has(+ .t-dock-slot:hover) {
+    transform: scale(1.15);
+  }
+  /* Staggered by index so the row drifts unevenly, like things on water. */
+  .t-dock-tile {
+    animation: dock-float 6.5s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * -0.37s);
+  }
+}
+
+/*
+ * Without the animation a clipped single-line track would hide most of the
+ * stack, so it becomes an ordinary wrapped list and the duplicate run goes away.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .t-marquee {
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .t-marquee-track {
+    width: 100%;
+  }
+  .t-marquee-run {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .t-marquee-run[aria-hidden='true'] {
+    display: none;
+  }
+}
+
+/* Forced colors flattens background-color, which would merge the two bars. */
+@media (forced-colors: active) {
+  .t-delta-baseline {
+    background-color: ButtonBorder;
+  }
+  .t-delta-current {
+    background-color: Highlight;
+  }
+}
+
 @layer components {
   .t-hero {
-    @apply font-display text-4xl sm:text-5xl font-semibold tracking-tight text-fg;
+    @apply font-display text-4xl font-semibold tracking-[-0.05em] text-fg sm:text-5xl lg:text-6xl;
   }
   .t-section {
-    @apply font-display text-2xl sm:text-3xl font-semibold tracking-tight;
+    @apply font-display text-2xl font-semibold tracking-[-0.045em] sm:text-3xl;
+  }
+  .t-record-title {
+    @apply font-display text-xl font-semibold tracking-[-0.04em] sm:text-2xl;
   }
   .t-body {
     @apply font-sans text-base leading-7;
   }
+  /* Mock sets the hero paragraph at 17px/1.67, weight 400, in full ink. */
+  .t-lede {
+    @apply font-sans text-[17px] font-normal leading-[1.67] text-fg;
+  }
+  /* py-3 leaves room for a magnified tile, which would otherwise be clipped. */
+  .t-marquee {
+    @apply overflow-hidden py-4;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  }
+  .t-marquee-track {
+    @apply flex w-max items-center;
+  }
+  .t-marquee-run {
+    @apply flex shrink-0 items-center gap-3 pr-3;
+  }
+  /*
+   * Two elements, because the slot owns the hover scale and the tile owns the
+   * drift. One element cannot hold both, since each would overwrite the
+   * other's transform.
+   */
+  .t-dock-slot {
+    @apply inline-flex shrink-0;
+    transition: transform 0.24s ease-out;
+  }
+  .t-dock-tile {
+    @apply inline-flex h-14 w-14 items-center justify-center border border-rule text-fg;
+    transition:
+      border-color 0.22s ease-out,
+      color 0.22s ease-out;
+  }
+  /* Outside the motion query so reduced-motion still gets hover feedback. */
+  .t-dock-slot:hover .t-dock-tile {
+    @apply border-accent-text text-accent-text;
+  }
+  .t-hover-link {
+    @apply underline-offset-4 transition-colors hover:text-accent-text hover:underline;
+  }
+  /*
+   * The three small bands (measured outcomes, stack, design rule) share one
+   * height so the large/small alternation reads as a deliberate rhythm rather
+   * than three differently sized interruptions.
+   */
+  .t-band-sm {
+    @apply flex min-h-[13rem] flex-col justify-center py-8;
+  }
+
+  /*
+   * Inverted band. Rather than recolouring each child, it redefines the
+   * palette tokens locally, so text-muted, border-rule and text-accent-text
+   * keep working and resolve against the dark ground. Measured against
+   * --emphasis: text 6.9:1, muted 5.1:1, accent 4.6:1 in light; 10.6, 5.8 and
+   * 5.2 in dark.
+   */
+  .t-inverted {
+    --fg: 236 240 226;
+    --muted: 188 211 196;
+    --rule: 91 145 131;
+    --accent: 240 184 159;
+    --accent-text: 240 184 159;
+    /*
+     * The ground in here is the emphasis fill, so the surface tokens have to
+     * follow it. A child painting bg-surface or ring-offset-bg would otherwise
+     * punch a paper-coloured hole and take the inverted --fg with it.
+     */
+    --bg: var(--emphasis);
+    --surface: var(--emphasis);
+    --band: var(--emphasis);
+    background-color: rgb(var(--emphasis));
+    color: rgb(var(--fg));
+  }
   .t-muted {
-    @apply text-sm text-muted leading-6;
+    @apply text-sm leading-6 text-muted;
   }
   .t-label {
-    @apply text-xs font-semibold uppercase tracking-wide text-muted;
+    @apply font-mono text-[11px] uppercase tracking-[0.07em] text-muted;
+  }
+  .t-summary {
+    @apply cursor-pointer font-mono text-[11px] uppercase tracking-[0.07em] text-accent-text;
+    list-style: none;
+  }
+  .t-summary::-webkit-details-marker {
+    display: none;
+  }
+  .t-metric {
+    @apply font-mono text-metric font-medium tabular-nums;
+  }
+  .t-metric-sm {
+    @apply font-mono text-xl font-medium tabular-nums;
   }
   .t-tech {
-    @apply rounded-full border border-border px-2.5 py-1 text-xs text-fg/90;
+    @apply border border-rule px-2.5 py-1 text-xs;
   }
-  .t-pill {
-    @apply rounded-full border border-border bg-fg/5 px-3.5 py-1.5 text-sm font-medium text-fg;
+  .t-pip {
+    @apply border border-rule bg-band px-2 py-1 font-mono text-[11px];
   }
   .t-card-meta {
-    @apply text-sm text-fg/90;
+    @apply text-sm;
+  }
+  .t-plate {
+    @apply border border-rule bg-surface;
+    box-shadow: 9px 9px 0 rgb(var(--ink) / 0.13);
+  }
+  .t-blueprint {
+    background-image:
+      linear-gradient(rgb(var(--ink) / 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--ink) / 0.07) 1px, transparent 1px);
+    background-size: 26px 26px;
   }
   .t-input {
-    @apply mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm text-fg outline-none focus:ring-2 focus:ring-accent;
+    @apply mt-1 w-full border border-rule bg-surface px-3 py-2 text-sm text-fg outline-none transition-colors hover:border-accent-text focus:ring-2 focus:ring-accent-fill;
   }
   .t-chat-launcher {
-    @apply inline-flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-contrast shadow-soft transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg;
+    @apply inline-flex h-14 w-14 items-center justify-center bg-accent-fill text-on-accent shadow-soft transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-fill focus-visible:ring-offset-2 focus-visible:ring-offset-bg;
   }
+  /*
+   * overflow-hidden already makes this a scroll container, so overscroll-contain
+   * stops a scroll anywhere over the panel, not only over the message log, from
+   * reaching the page behind it.
+   */
   .t-chat-panel {
-    @apply flex flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-soft;
+    @apply flex flex-col overflow-hidden overscroll-contain border border-rule bg-surface shadow-soft;
   }
   .t-chat-icon-btn {
-    @apply inline-flex h-9 w-9 items-center justify-center rounded-lg text-fg transition hover:bg-fg/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent;
+    @apply inline-flex h-9 w-9 items-center justify-center text-fg transition hover:bg-fg/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-fill;
   }
   .t-chat-message {
-    @apply max-w-[85%] break-words rounded-2xl px-3 py-2 text-sm;
+    @apply max-w-[85%] break-words px-3 py-2 text-sm;
   }
   .t-chat-message-user {
-    @apply ml-auto bg-accent text-accent-contrast;
+    @apply ml-auto bg-accent-fill text-on-accent;
   }
   .t-chat-message-assistant {
-    @apply mr-auto border border-border bg-bg text-fg;
+    @apply mr-auto border border-rule bg-bg text-fg;
+  }
+  .t-chat-suggestion {
+    @apply w-full border border-rule bg-band px-3 py-2 text-left font-mono text-[11px] text-fg underline-offset-4 transition-colors hover:text-accent-text hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-fill;
   }
   .t-chat-send {
-    @apply inline-flex h-[42px] w-[42px] items-center justify-center rounded-xl bg-accent text-accent-contrast transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex h-[42px] w-[42px] items-center justify-center bg-accent-fill text-on-accent transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-fill focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:cursor-not-allowed disabled:opacity-50;
   }
   .t-chat-ripple-layer {
     @apply pointer-events-none absolute inset-0 flex items-center justify-center;
   }
   .t-chat-ripple-glow {
-    @apply absolute h-16 w-16 rounded-full bg-accent/20 blur-[2px];
+    @apply absolute h-16 w-16 bg-accent-fill/20 blur-[2px];
   }
+  /* Static by default; the animation is added under prefers-reduced-motion. */
   .t-chat-ripple-ring {
-    @apply absolute h-14 w-14 rounded-full border-2 border-accent/70;
-    animation: chat-ripple 1.6s ease-out infinite;
-  }
-  .t-chat-ripple-ring-delay {
-    @apply border-accent/55;
-    animation-delay: 0.8s;
-  }
-  .t-chat-ripple-static {
-    @apply absolute h-14 w-14 rounded-full border-2 border-accent/45;
-  }
-}
-
-@layer utilities {
-  .text-muted {
-    color: rgb(var(--muted));
+    @apply absolute h-14 w-14 border-2 border-accent-fill/45;
   }
 }
