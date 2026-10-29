@@ -1,73 +1,78 @@
-import { motion } from 'framer-motion'
+import { Button, ButtonLink, Container, SocialLinks } from '@/components'
+import { BUTTON_VARIANT, SECTION_IDS, site } from '@/data'
+import { prefetchChatPanel } from '@/features/chat'
 
-import { ButtonLink, Container, SocialLinks } from '@/components'
-import { HERO_ANIMATION, SECTION_IDS, site } from '@/data'
+import { HeroFigure } from './HeroFigure'
 
-export function Hero() {
+const HERO_TITLE_ID = `${SECTION_IDS.top}-title`
+
+type HeroProps = {
+  isChatOpen: boolean
+  onToggleChat: () => void
+}
+
+export function Hero({ isChatOpen, onToggleChat }: HeroProps) {
+  const hero = site.sections.hero
+
   return (
-    <motion.div
-      initial={HERO_ANIMATION.initial}
-      animate={HERO_ANIMATION.animate}
-      transition={HERO_ANIMATION.transition}
-      className="space-y-5"
-    >
-      <section id={SECTION_IDS.top} className="py-12 sm:py-16">
-        <Container>
-          <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-            <div className="space-y-5">
-              <p className="t-muted">
-                {site.role} • {site.location}
-              </p>
+    <section id={SECTION_IDS.top} aria-labelledby={HERO_TITLE_ID} className="relative">
+      <div aria-hidden="true" className="t-blueprint pointer-events-none absolute inset-0" />
 
-              <h1 className="t-hero">{site.tagline}</h1>
-
-              <p className="t-body text-fg sm:text-lg">{site.sections.hero.body}</p>
-
-              <div className="flex flex-wrap gap-3">
-                <ButtonLink href={site.ctas.primary.href}>{site.ctas.primary.label}</ButtonLink>
-                <div className="sm:hidden">
-                  <SocialLinks items={[site.social.resume]} variant="iconOnly" />
-                </div>
-                <div className="hidden sm:block">
-                  <SocialLinks items={[site.social.resume]} variant="iconLabel" />
-                </div>
-
-                <div className="sm:hidden">
-                  <SocialLinks items={[site.social.linkedin]} variant="iconOnly" />
-                </div>
-                <div className="hidden sm:block">
-                  <SocialLinks items={[site.social.linkedin]} variant="iconLabel" />
-                </div>
-              </div>
-
-              <ul className="flex flex-wrap gap-2 pt-2">
-                {site.highlights.map((highlight) => (
-                  <li key={highlight} className="t-pill">
-                    {highlight}
-                  </li>
-                ))}
-              </ul>
+      <Container>
+        <div className="relative grid gap-12 py-14 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div>
+            <div className="flex flex-wrap gap-x-8 gap-y-2">
+              {hero.eyebrow.map((item) => (
+                <span key={item} className="t-label">
+                  {item}
+                </span>
+              ))}
             </div>
 
-            <div className="rounded-3xl border border-border bg-gradient-to-b from-fg/5 to-transparent p-6">
-              <div className="space-y-4">
-                <div className="t-muted">{site.sections.hero.snapshot.title}</div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {site.sections.hero.snapshot.items.map((item) => (
-                    <div
-                      key={item.label}
-                      className="rounded-2xl border border-border bg-surface p-4 shadow-sm"
-                    >
-                      <div className="text-xs text-fg">{item.label}</div>
-                      <div className="mt-1 font-medium">{item.value}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <h1 id={HERO_TITLE_ID} className="t-hero mt-8">
+              {hero.headline.map((line, index) => (
+                <span key={line} className="block">
+                  {index === hero.headlineAccentIndex ? (
+                    <em className="font-normal text-accent">{line}</em>
+                  ) : (
+                    line
+                  )}
+                </span>
+              ))}
+            </h1>
+
+            <p className="t-lede mt-7 max-w-[52ch]">{hero.substance}</p>
+
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <ButtonLink href={site.ctas.primary.href} title={site.ctas.primary.title}>
+                {site.ctas.primary.label}
+                <span aria-hidden="true">→</span>
+              </ButtonLink>
+              <Button
+                variant={BUTTON_VARIANT.secondary}
+                type="button"
+                title={hero.chatCta.title}
+                onClick={onToggleChat}
+                onPointerEnter={prefetchChatPanel}
+                onFocus={prefetchChatPanel}
+                aria-haspopup="dialog"
+                aria-expanded={isChatOpen}
+              >
+                {hero.chatCta.label}
+              </Button>
             </div>
+
+            <p className="t-label mt-5 max-w-[26ch] leading-5">{hero.caption}</p>
+
+            <SocialLinks
+              items={[site.social.resume, site.social.linkedin]}
+              className="mt-8 flex flex-wrap gap-3"
+            />
           </div>
-        </Container>
-      </section>
-    </motion.div>
+
+          <HeroFigure />
+        </div>
+      </Container>
+    </section>
   )
 }

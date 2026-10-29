@@ -7,7 +7,17 @@ const DEFAULT_CHAT_API_URL = '/api/query'
 const DOMAIN_URL = import.meta.env.VITE_DOMAIN_URL?.replace(/\/+$/, '') ?? ''
 const CHAT_ENDPOINT = `${DOMAIN_URL}${DEFAULT_CHAT_API_URL}`
 
+/*
+ * Aligns with the backend's KV and R2 caching constraints, so it is a protocol
+ * limit rather than a UI preference. Changing it requires a backend change.
+ */
+export const MAX_INPUT_CHARACTERS = 480
+
 export async function requestChatReply(question: string): Promise<string> {
+  if (question.length > MAX_INPUT_CHARACTERS) {
+    throw new Error(`Questions are limited to ${MAX_INPUT_CHARACTERS} characters.`)
+  }
+
   const response = await httpRequest<ChatQueryResponseData, ChatQueryRequest>({
     url: CHAT_ENDPOINT,
     method: 'POST',

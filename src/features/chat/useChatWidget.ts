@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState } from 'react'
 
+import { site } from '@/data'
+
 import { requestChatReply, toChatErrorMessage } from './chatApi'
 import type { ChatMessage } from './types'
-
-const INITIAL_ASSISTANT_MESSAGE = 'Hi, I’m Deepak. Ask me about my projects, skills, or experience.'
 
 function createMessage(role: ChatMessage['role'], text: string): ChatMessage {
   return {
@@ -14,49 +14,58 @@ function createMessage(role: ChatMessage['role'], text: string): ChatMessage {
   }
 }
 
+/*
+ * Owned by ChatDock rather than the lazy panel: the panel unmounts on close,
+ * which would take the conversation with it.
+ */
 export function useChatWidget() {
-  const [isOpen, setIsOpen] = useState(false)
   const [draft, setDraft] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
-    createMessage('assistant', INITIAL_ASSISTANT_MESSAGE),
+    createMessage('assistant', site.chat.greeting),
   ])
 
   const canSend = useMemo(() => draft.trim().length > 0 && !isSending, [draft, isSending])
 
-  const open = useCallback(() => setIsOpen(true), [])
-  const close = useCallback(() => setIsOpen(false), [])
+  const sendQuestion = useCallback(
+    async (question: string) => {
+      const nextQuestion = question.trim()
 
-  const submitDraft = useCallback(async () => {
+      if (!nextQuestion || isSending) {
+        return
+      }
+
+      setIsSending(true)
+      setMessages((current) => [...current, createMessage('user', nextQuestion)])
+
+      try {
+        const answer = await requestChatReply(nextQuestion)
+        setMessages((current) => [...current, createMessage('assistant', answer)])
+      } catch (error) {
+        const message = toChatErrorMessage(error)
+        setMessages((current) => [...current, createMessage('assistant', message)])
+      } finally {
+        setIsSending(false)
+      }
+    },
+    [isSending],
+  )
+
+  const submitDraft = useCallback(() => {
     const nextQuestion = draft.trim()
-
-    if (!nextQuestion || isSending) {
-      return
-    }
+    if (!nextQuestion) return
 
     setDraft('')
-    setIsSending(true)
-    setMessages((current) => [...current, createMessage('user', nextQuestion)])
 
-    try {
-      const answer = await requestChatReply(nextQuestion)
-      setMessages((current) => [...current, createMessage('assistant', answer)])
-    } catch (error) {
-      const message = toChatErrorMessage(error)
-      setMessages((current) => [...current, createMessage('assistant', message)])
-    } finally {
-      setIsSending(false)
-    }
-  }, [draft, isSending])
+    return sendQuestion(nextQuestion)
+  }, [draft, sendQuestion])
 
   return {
     canSend,
-    close,
     draft,
-    isOpen,
     isSending,
     messages,
-    open,
+    sendQuestion,
     setDraft,
     submitDraft,
   }

@@ -66,15 +66,18 @@ Vite inlines `VITE_`-prefixed variables into the client bundle, so anything set 
 
 ```txt
 src/
-  components/        # reusable UI primitives (Button, Card, IconLink, ThemeToggle)
-  data/              # site content and constants, single source of truth
-  features/chat/     # chat widget, API client, link-token rendering
+  components/        # reusable UI primitives (Button, Card, IconAction, ThemeToggle)
+  data/              # site content, types, and constants, single source of truth
+  features/chat/     # eager dock, lazy panel, API client, link-token rendering
   sections/          # page sections (Hero, Work, Skills, Experience, Contact)
   services/http/     # typed HTTP client: validation, timeout, retry, errors
-  test/              # test setup (jest-dom matchers)
-  index.css          # global styles and design tokens
+  test/              # test setup (jest-dom matchers, Testing Library cleanup)
+  index.css          # font faces, design tokens, component classes
+  entry-server.tsx   # build-only render entry, loaded by the prerender plugin
 vite/
-  html-meta-plugin.ts  # injects title and description into index.html at build time
+  html-meta-plugin.ts  # writes the head at build time: meta, Open Graph, JSON-LD
+  prerender-plugin.ts  # renders the page into dist/index.html after the build
+public/fonts/        # self-hosted woff2 subsets (Fraunces, DM Sans, DM Mono)
 public/              # resume PDF, favicons, OG image
 .github/workflows/   # CI: quality checks and CodeQL
 ```
@@ -108,7 +111,7 @@ Changes are tracked in [`CHANGELOG.md`](./CHANGELOG.md), following Keep a Change
 
 ## About
 
-Software engineer since 2019, building React and React Native products with pragmatic architecture, measurable outcomes, and quality guardrails. Specializing in native Android integration (Kotlin, TurboModules) and applied AI.
+Product engineer since 2019, building web and mobile products in React and React Native with pragmatic architecture, measurable outcomes, and quality guardrails. Owns the Android side of cross-platform surfaces, including native modules, and builds applied AI that runs in production.
 
 Currently at **Tractor Supply Company** (Brentwood, TN) as Technology Consultant I via Infosys Limited. Previously **Southern California Edison** and **Allstate Corporation**, both via Infosys.
 

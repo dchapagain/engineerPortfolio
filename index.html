@@ -1,36 +1,71 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#eaf2e8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f1a17" media="(prefers-color-scheme: dark)" />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Fonts are same-origin, but are still fetched in CORS mode: without
+         crossorigin the browser downloads each preloaded file a second time. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      crossorigin
+      href="/fonts/fraunces-latin-600-normal-v1.woff2"
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      crossorigin
+      href="/fonts/dm-mono-latin-400-normal-v1.woff2"
+    />
 
     <title>{{SITE_TITLE}}</title>
     <meta name="description" content="{{SITE_DESCRIPTION}}" />
+    <meta name="author" content="{{SITE_NAME}}" />
+    <link rel="canonical" href="{{PAGE_URL}}" />
+    <!-- max-image-preview lets the share card run full width in results. -->
+    <meta name="robots" content="index, follow, max-image-preview:large" />
 
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="{{SITE_NAME}}" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content="{{SITE_TITLE}}" />
     <meta property="og:description" content="{{SITE_DESCRIPTION}}" />
-    <meta property="og:url" content="https://deepakchapagain.com/" />
-    <meta property="og:image" content="https://deepakchapagain.com/og-image.png" />
+    <meta property="og:url" content="{{PAGE_URL}}" />
+    <meta property="og:image" content="{{OG_IMAGE}}" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="{{OG_IMAGE_WIDTH}}" />
+    <meta property="og:image:height" content="{{OG_IMAGE_HEIGHT}}" />
+    <meta property="og:image:alt" content="{{OG_IMAGE_ALT}}" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{SITE_TITLE}}" />
     <meta name="twitter:description" content="{{SITE_DESCRIPTION}}" />
-    <meta name="twitter:image" content="https://deepakchapagain.com/og-image.png" />
+    <meta name="twitter:image" content="{{OG_IMAGE}}" />
+    <meta name="twitter:image:alt" content="{{OG_IMAGE_ALT}}" />
+
+    <script type="application/ld+json">
+      {{JSON_LD}}
+    </script>
 
     <script>
+      // Mirrors getInitialTheme in useTheme.ts. An explicit 'light' is truthy,
+      // so a stored choice always wins over the OS preference.
       try {
-        const storedTheme = localStorage.getItem('theme')
-        if (storedTheme === 'dark') document.documentElement.classList.add('dark')
+        const stored = localStorage.getItem('theme')
+        const dark =
+          stored === 'dark' ||
+          (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        if (dark) document.documentElement.classList.add('dark')
       } catch {
         // Ignore
       }

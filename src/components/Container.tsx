@@ -1,5 +1,10 @@
 import type { PropsWithChildren } from 'react'
 
+/*
+ * Full bleed with percentage gutters, matching the Systems Atlas mock, which
+ * uses `padding: Xpx 4%` on every band and sets no max width. Line length is
+ * held by the measure caps on the text blocks instead.
+ */
 export function Container({ children }: PropsWithChildren) {
-  return <div className="mx-auto my-2 w-full max-w-6xl px-4 sm:px-6 lg:px-8">{children}</div>
+  return <div className="w-full px-[4%]">{children}</div>
 }
