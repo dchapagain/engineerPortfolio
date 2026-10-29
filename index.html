@@ -2,9 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#eaf2e8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f1a17" media="(prefers-color-scheme: dark)" />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Fonts are same-origin, but are still fetched in CORS mode: without
          crossorigin the browser downloads each preloaded file a second time. -->
@@ -38,9 +42,14 @@
     <meta name="twitter:image" content="https://deepakchapagain.com/og-image.png" />
 
     <script>
+      // Mirrors getInitialTheme in useTheme.ts. An explicit 'light' is truthy,
+      // so a stored choice always wins over the OS preference.
       try {
-        const storedTheme = localStorage.getItem('theme')
-        if (storedTheme === 'dark') document.documentElement.classList.add('dark')
+        const stored = localStorage.getItem('theme')
+        const dark =
+          stored === 'dark' ||
+          (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        if (dark) document.documentElement.classList.add('dark')
       } catch {
         // Ignore
       }
