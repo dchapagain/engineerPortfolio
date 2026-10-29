@@ -1,5 +1,6 @@
-import { IconKey, IconLink, iconMap } from '@/components'
-import { ICON_DISPLAY_TYPE } from '@/data'
+import { IconLink } from './IconAction'
+import type { IconKey } from './icons'
+import { iconMap } from './icons'
 
 type LinkItem = {
   label: string
@@ -10,17 +11,18 @@ type LinkItem = {
 
 type Props = {
   items: readonly LinkItem[]
-  variant?: keyof typeof ICON_DISPLAY_TYPE
   iconSize?: number
+  className?: string
 }
 
-export function SocialLinks({
-  items,
-  variant = ICON_DISPLAY_TYPE.iconLabel,
-  iconSize = 18,
-}: Props) {
+/*
+ * One element per link. The label is hidden with a utility rather than by
+ * rendering a second copy of every link, which is what put 20 anchors in the
+ * DOM for 4 destinations.
+ */
+export function SocialLinks({ items, iconSize = 18, className = 'flex flex-wrap gap-3' }: Props) {
   return (
-    <div className="flex gap-4">
+    <div className={className}>
       {items.map((item) => {
         const Icon = iconMap[item.icon]
         const external = Boolean(item.external)
@@ -32,12 +34,10 @@ export function SocialLinks({
             href={item.href}
             target={external ? '_blank' : '_self'}
             rel={external ? 'noopener noreferrer' : undefined}
-            className={variant === ICON_DISPLAY_TYPE.iconOnly ? 'px-2' : ''}
+            className="px-2 sm:px-3"
           >
             <Icon aria-hidden="true" focusable="false" size={iconSize} />
-            {variant === ICON_DISPLAY_TYPE.iconLabel && (
-              <span className="text-sm">{item.label}</span>
-            )}
+            <span className="hidden text-sm sm:inline">{item.label}</span>
           </IconLink>
         )
       })}

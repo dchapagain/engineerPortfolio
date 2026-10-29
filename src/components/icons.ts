@@ -1,17 +1,21 @@
-import { Download, Mail, Moon, Sun } from 'lucide-react'
+import { Download, Github, Linkedin, Mail, Menu, Moon, Sun, X } from 'lucide-react'
 import { ComponentType, SVGProps } from 'react'
-import { SiGithub, SiLinkedin } from 'react-icons/si'
 
-type IconComponent = ComponentType<SVGProps<SVGSVGElement> & { size?: number | string }>
+export type IconComponent = ComponentType<SVGProps<SVGSVGElement> & { size?: number | string }>
+
+// The two libraries type their components differently; this keeps the maps
+// readable instead of repeating a cast on every entry.
+export const asIcon = (component: unknown) => component as IconComponent
 
 export const iconMap = {
-  download: Download as unknown as IconComponent,
-  mail: Mail as unknown as IconComponent,
-  sun: Sun as unknown as IconComponent,
-  moon: Moon as unknown as IconComponent,
-  // brand Icons from react-icons
-  github: SiGithub as IconComponent,
-  linkedin: SiLinkedin as IconComponent,
+  download: asIcon(Download),
+  mail: asIcon(Mail),
+  sun: asIcon(Sun),
+  moon: asIcon(Moon),
+  menu: asIcon(Menu),
+  close: asIcon(X),
+  github: asIcon(Github),
+  linkedin: asIcon(Linkedin),
 } as const
 
 export type IconKey = keyof typeof iconMap
