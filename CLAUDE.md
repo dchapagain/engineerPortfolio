@@ -65,8 +65,11 @@ src/
   services/http/     typed HTTP client: validation, timeout, retry, errors
   test/              test setup; specs are co-located as `*.test.ts`
   index.css          global styles and CSS custom-property design tokens
+  entry-server.tsx   build-only render entry, loaded by the prerender plugin
 vite/
-  html-meta-plugin.ts  injects title/description into index.html at build time
+  html-meta-plugin.ts  writes the document head at build time: title, description,
+                       Open Graph, Twitter card, and the schema.org JSON-LD graph
+  prerender-plugin.ts  renders the page into dist/index.html after the browser build
 ```
 
 ### `src/data/` is the content boundary
@@ -78,6 +81,53 @@ When asked to change wording on the site, edit `site.ts`, not the JSX.
 `site.ts` is imported by `vite/html-meta-plugin.ts` at build time in a **Node
 context**. It must therefore stay side-effect-free and free of browser-only APIs.
 Do not import React, touch `window`, or read `localStorage` from it.
+
+`site.meta` is the head's half of that contract: the canonical origin and the share
+card's path, alt text and dimensions. No component reads it. The plugin derives every
+absolute URL, the Open Graph and Twitter tags, and the JSON-LD graph from `site.ts`,
+so the structured data cannot drift from the page it describes. Add a fact to
+`site.ts` and it reaches the markup; never hand-write a URL or a claim into
+`index.html`.
+
+### `public/` is copied verbatim
+
+Vite does not fingerprint `public/`, so anything cached hard by a third party needs
+the version in its filename. The fonts carry `-v1`, and the share card is
+`og-image-v2.png` because social platforms cache share images by URL for weeks: a new
+card at the old path will not reach them. Bump the filename and `site.meta.ogImage`
+together. Favicons keep stable names on purpose, since browsers probe for them.
+
+### Prerendering
+
+`npm run build` renders the page into `dist/index.html` after the browser build, so the
+served document carries the content rather than an empty root div. Search crawlers run
+the app and would reach the page either way; the crawlers behind generative answers
+largely do not, and read only what the server returns. The output is still a static
+file, so nothing about hosting changes.
+
+`vite/prerender-plugin.ts` drives it and stays string only, which is what keeps React
+types out of the Node program and leaves `site.ts` its no-DOM guard. The render itself
+is `src/entry-server.tsx`, in the app's program where the DOM lib exists. Nothing in the
+client graph imports it, so it never reaches a bundle.
+
+Two rules follow, and both fail at build time or on screen rather than in a test:
+
+1. **Nothing may touch `window` or `document` while rendering.** Effects are fine, they
+   do not run during the pass. A `useState` initializer is not, which is why
+   `getInitialTheme` carries a `typeof window` guard.
+2. **Entrance animations belong on `#root`, not on a child.** The client re-renders
+   rather than hydrating, so every child element is replaced, and a CSS animation on a
+   replaced node starts over. `#root` is never replaced.
+
+The client calls `createRoot().render()`, not `hydrateRoot()`. Hydration needs the server
+and the first client render to agree, and here they cannot: the theme comes from
+`localStorage` and `prefers-color-scheme`, which a static build cannot know. The single
+visible consequence is that the theme toggle is prerendered in its light state and
+corrects itself on mount.
+
+The lazy stack band is deliberately left as its Suspense fallback. Rendering it costs
+22 kB gzip of the document, two thirds of that the `aria-hidden` duplicate run behind
+the marquee, to repeat 23 skill names that the JSON-LD graph already carries.
 
 ### `src/services/http/`
 
@@ -131,8 +181,17 @@ change. `[Unreleased]` therefore means merged into `main` but not yet promoted t
 production. Version bumps and tags happen when a release is cut.
 
 **Dependencies:** adding one needs a justification. Current set is deliberately small.
-`lucide-react` covers UI icons; `react-icons` is used only for the GitHub and LinkedIn
-brand glyphs in `src/components/icons.ts`.
+`lucide-react` covers every eagerly loaded icon, including the GitHub and LinkedIn marks
+and the stand-ins for practices with no brand (accessibility, native modules, prompt
+safety). It ships one file per icon, so it splits across chunks cleanly.
+
+`react-icons` supplies product brand marks for the stack band only, and lives in
+`src/components/techIcons.ts`, which **nothing in the eager graph may import**. That
+boundary is load-bearing: `react-icons/si` is a single 4.9 MB module, so a bundler cannot
+split it, and one eager import drags every surviving brand glyph into the initial bundle.
+Keeping it to the lazy Skills chunk is worth about 12 kB gzip. For the same reason
+`techIcons.ts` is not re-exported from `src/components/index.ts`, and `Skills` is not
+re-exported from `src/sections/index.ts`.
 
 **No hardcoded year counts:** never write a numeric count like "6+ years" into copy;
 it goes stale and has to be updated every year. State the career start instead,
